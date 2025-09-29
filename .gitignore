@@ -5,6 +5,7 @@
 .env
 data/*
 qrs/*
+serviceAccountKey.json
 
 # SO / editores
 .DS_Store

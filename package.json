@@ -1,0 +1,16 @@
+{
+  "name": "generador-entradas",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dry": "DRY_RUN=1 node index.js"
+  },
+  "dependencies": {
+    "@sendgrid/mail": "^8.1.0",
+    "dotenv": "^16.4.5",
+    "firebase-admin": "^12.6.0",
+    "qrcode": "^1.5.3",
+    "xlsx": "^0.18.5"
+  }
+}
