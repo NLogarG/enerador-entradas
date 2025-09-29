@@ -1,0 +1,12 @@
+# dependencias
+/node_modules
+
+# secretos y datos sensibles
+.env
+data/*
+qrs/*
+
+# SO / editores
+.DS_Store
+Thumbs.db
+.vscode
