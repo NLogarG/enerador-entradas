@@ -1,10 +1,11 @@
+// index.js
 import 'dotenv/config'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import QRCode from 'qrcode'
 import XLSX from 'xlsx'
-import * as sgMail from '@sendgrid/mail'
+import sgMail from '@sendgrid/mail'
 import { db, FieldValue } from './src/firebaseAdmin.js'
 import { buildEmailHTML } from './emailTemplate.js'
 
@@ -20,16 +21,18 @@ const {
 
 const DRY_RUN = !!process.env.DRY_RUN
 
-// SendGrid init
-sgMail.setApiKey(SENDGRID_API_KEY)
+// ✅ Solo inicializa SendGrid si no es dry-run
+if (!DRY_RUN) {
+  sgMail.setApiKey(SENDGRID_API_KEY)
+}
 
-// Rutas
+// === Rutas ===
 const DATA_DIR = path.join(__dirname, 'data')
 const EXCEL_PATH = path.join(DATA_DIR, 'entradas.xlsx')
 const QR_DIR = path.join(__dirname, 'qrs')
 if (!fs.existsSync(QR_DIR)) fs.mkdirSync(QR_DIR, { recursive: true })
 
-// Leer Excel (espera columnas: Alumno, Email, Entradas)
+// === Leer Excel (espera columnas: Alumno, Email, Entradas) ===
 function readRowsFromExcel(filePath) {
   const wb = XLSX.readFile(filePath)
   const sheet = wb.Sheets[wb.SheetNames[0]]
@@ -90,7 +93,14 @@ async function createEntradaAndSend({ alumno, email, cantidad }) {
   }
 
   if (!DRY_RUN) {
-    await sgMail.send(msg)
+    try {
+      await sgMail.send(msg)
+    } catch (e) {
+      console.error('❌ SendGrid error:')
+      console.error('status:', e.response?.statusCode)
+      console.error('body:', e.response?.body)
+      throw e // cuenta como FAIL en el resumen
+    }
   }
 
   return { codigo, pngPath, email, cantidad }
